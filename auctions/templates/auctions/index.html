@@ -1,0 +1,30 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>{{ status }} Listings</h2>
+    <hr>
+    
+    {% for listing in listings %}
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-sm-3">
+                    <a href="{% url 'listings' listing_id=listing.id %}"><img src= {{ listing.image }} class="img-fluid img-thumbnail"></a>
+                </div>
+                <div class="col">
+                    <h3><a href="{% url 'listings' listing_id=listing.id %}">{{ listing.title }}</a></h3>
+                    <p>{{ listing.description }}</p>
+                    <p><b>Starting Bid: </b>${{ listing.startingbid|floatformat:2 }}</p>
+                    {% if listing.currentbid and listing.status == "open" %}
+                        <p><b>Current Bid: </b>${{ listing.currentbid|floatformat:2 }}</p>
+                    {% elif listing.currentbid and listing.status == "closed" %}
+                        <p><b>Winning Bid: </b>${{ listing.currentbid|floatformat:2 }}</p>
+                    {% endif %}
+                    <p><b>Created: </b>{{ listing.createddate }} UTC</p>
+                </div>
+            </div>
+        </div>
+        <hr>
+
+    {% endfor %}
+
+{% endblock %}

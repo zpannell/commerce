@@ -1,0 +1,14 @@
+body {
+    padding: 10px;
+}
+
+.row {
+    border: 2px solid rgb(255, 234, 113);
+    border-radius: 4px;
+    padding: 4px;
+    background-color: rgb(252, 255, 216);
+}
+
+.img-listing {
+    max-height: 400px;
+}

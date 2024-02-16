@@ -1,0 +1,44 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+    <h2>Create a new listing</h2>
+
+    {% if message %}
+        <div>{{ message }}</div>
+    {% endif %}
+
+    <form action="{% url 'newlisting' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="title">Title:</title>
+            <input class="form-control" autofocus type="text" name="title" placeholder="Listing Title">
+        </div>
+        <div class="form-group">
+            <label for="title">Listing Description:</title>
+            <textarea class="form-control" autofocus name="description" placeholder="Listing Description"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="title">Starting Bid:</title>
+            <input class="form-control" autofocus type="number" name="startingbid" placeholder="00.00" step=".01">
+        </div>
+        <div class="form-group">
+            <label for="title">Image URL (optional):</title>
+            <input class="form-control" autofocus type="url" name="imageurl" placeholder="https://placebear.com/200/300.jpg">
+        </div>
+        <div class="form-group">
+            <label for="title">Category (optional):</title>
+            <select class="form-control" autofocus type="text" name="category">
+                <option></option>
+                {% for category in categories %}
+                    <option value = {{ category }}>{{ category }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="hidden" name="createdby" value= {{ user.get_username }}>
+        </div>
+        <input class="btn btn-primary" type="submit" value="Create Listing">
+    </form>
+
+{% endblock %}

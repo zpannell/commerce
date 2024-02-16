@@ -1,0 +1,84 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Listing: {{ listing.title }}</h2>
+    {% if user.username != "" %}
+        {% if listing in user.watchlist.all %}
+            <form action="{% url 'removewatchlist' %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input class="form-control" type="hidden" name="watchlist" value={{ listing.id }}>
+                </div>
+                <input class="btn btn-primary" type="submit" value="Remove from Watchlist">
+            </form>
+        {% else %}
+            <form action="{% url 'addwatchlist' %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input class="form-control" type="hidden" name="watchlist" value={{ listing.id }}>
+                </div>
+                <input class="btn btn-primary" type="submit" value="Add to Watchlist">
+            </form>
+        {% endif %}
+    {% endif %}
+    <p></p>
+    <img src= {{ listing.image }} class="img-fluid img-listing">
+    <p>{{ listing.description }}</p>
+    {% if listing.currentbid %}
+        {% if listing.status == "open" %}
+            <p><b>Current Bid: ${{ listing.currentbid|floatformat:2 }}</b></p>
+        {% else %}
+            <p><b>Winning Bid: ${{ listing.currentbid|floatformat:2 }}</b></p>
+            {% if user.get_username == listing.highestbidder %}
+                <p><b>Congratulations! You have won the auction!</b></p>
+            {% endif %}
+        {% endif %}
+    {% else %}
+        <p><b>Starting Bid: ${{ listing.startingbid|floatformat:2 }}</b></p>
+    {% endif %}
+    <p></p>
+    {% if listing.status == "open" %}
+        <form action="{% url 'listings' listing_id=listing.id %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="title">{{ bids }} bid(s) so far.</title>
+                <input class="form-control" autofocus type="number" name="bid" placeholder="Bid" step=".01">
+            </div>
+            <input class="btn btn-primary" type="submit" value="Place Bid">
+            {% if message %}
+                <p><b>{{ message }}</b></p>
+            {% endif %}
+        </form>
+    {% endif %}
+    {% if user.get_username == listing.createdby and listing.status == "open" %} 
+        <form action="{% url 'close' listing_id=listing.id %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <input class="form-control" type="hidden" name="close">
+            </div>
+            <input class="btn btn-primary" type="submit" value="Close Auction">
+        </form>
+    {% endif %}
+    <h3>Details</h3>
+    <ul>
+        <li>Listed by: {{ listing.createdby }}</li>
+        <li>Category: {{ listing.category }}</li>
+    </ul>
+    {% if listing.status == "open" and user.username != "" %} 
+        <form action="{% url 'comment' listing_id=listing.id %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="title">Add comment:</title>
+                <textarea class="form-control" autofocus name="comment" placeholder="Add comments here"></textarea>
+            </div>
+            <input class="btn btn-primary" type="submit" value="Add Comment">
+        </form>
+    {% endif %}
+    {% for each_comment in comment|dictsortreversed:"commentdate" %}
+        <hr>
+        <p><b>Comment by {{ each_comment.commentby }} on {{ each_comment.commentdate }}</b></p>
+        <p>{{ each_comment.commenttext }}</p>
+    {% endfor %}
+    <hr>
+
+{% endblock %}
